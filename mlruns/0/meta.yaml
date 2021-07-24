@@ -1,0 +1,4 @@
+artifact_location: file:///Users/java/Documents/10Acadamy/week%20-%202/abtest-mlops/mlruns/0
+experiment_id: '0'
+lifecycle_stage: active
+name: Default

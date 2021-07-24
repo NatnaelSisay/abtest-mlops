@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/java/Documents/10Acadamy/week%20-%202/abtest-mlops/mlruns/0/da979a86b2644638a65a7c137c0de45e/artifacts
+end_time: 1627143973291
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: ''
+run_id: da979a86b2644638a65a7c137c0de45e
+run_uuid: da979a86b2644638a65a7c137c0de45e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1627143973247
+status: 3
+tags: []
+user_id: java
