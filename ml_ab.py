@@ -36,7 +36,9 @@ data_url = dvc.api.get_url(path=path, repo=repo)
 
 
 # reading data
-ad_df = pd.read_csv(data_url)
+# this is not the right waytody , but cml is showing me error
+file_name = './data/AdSmartABdata.csv'
+ad_df = pd.read_csv(file_name)
 df = ad_df.copy()
 df['conversion'] = df.yes
 
