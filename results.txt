@@ -1,9 +1,0 @@
-Logistic Regretion
-Model Accuracy : 53.22 %
-Model Loss : 47.76 %
-rmse:0.6910947404650881	mae:0.47761194029850745	r2:-0.9133290497608337
-
-Decision Tree
-Model Accuracy : 54.02 %
-Model Loss : 51.94 %
-rmse:0.7206961808381025	mae:0.5194029850746269	r2:-1.0807453416149069
