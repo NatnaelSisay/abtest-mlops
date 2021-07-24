@@ -28,6 +28,7 @@ import dvc.api
 
 import mlflow
 import mlflow.sklearn
+from urllib.parse import urlparse
 
 path = 'data/AdSmartABdata.csv'
 repo = 'https://github.com/NatnaelSisay/abtest-mlops.git'
@@ -66,6 +67,12 @@ X_train, X_test, y_train, y_test\
 X_val, X_test, y_val, y_test\
     = train_test_split(X_test, y_test, test_size=0.10, random_state=1)
 
+def eval_metrics(actual, pred):
+    rmse = np.sqrt(mean_squared_error(actual, pred))
+    mae = mean_absolute_error(actual, pred)
+    r2 = r2_score(actual, pred)
+    return rmse, mae, r2
+
 #### Train Models
 if __name__ == '__main__':
   lr = LogisticRegression()
@@ -77,22 +84,36 @@ if __name__ == '__main__':
   #### Mean Score after cross-validation with kfold of 5
   lr_results = cross_val_score(lr, X_train, y_train, cv=5)
   dt_result = cross_val_score(dt, X_train, y_train, cv=5)
-  print(f"Linear Regretion K=5 mean score accuracy = {round(lr_results.mean() * 100,2)} %")
-  print(f"Decision Tree K=5 mean score accuracy = {round(dt_result.mean() * 100,2)} %")
 
+  lr_accuracy = round(lr_results.mean() * 100,2)
+  dt_accuracy = round(dt_result.mean() * 100,2)
+  # print(f"Linear Regretion K=5 mean score accuracy = {round(lr_results.mean() * 100,2)} %")
+  # print(f"Decision Tree K=5 mean score accuracy = {round(dt_result.mean() * 100,2)} %")
+  mlflow.log_metric('accuracy', lr_accuracy)
   ### Loss Pridiction
   lr_predict = lr.predict(X_val)
   dt_predict = dt.predict(X_val)
-  lr_loss = mean_squared_error(y_val,lr_predict)
+  lr_loss = round(mean_squared_error(y_val,lr_predict) * 100, 2)
   dt_loss = mean_squared_error(y_val, dt_predict)
-  print(f'Linear R. Loss = {round(lr_loss * 100, 2)}%')
-  print(f'Decision R. Loss = {round(dt_loss * 100, 2)}%')
+  mlflow.log_metric('loss', lr_loss)
 
+  # print(f'Linear R. Loss = {round(lr_loss * 100, 2)}%')
+  # print(f'Decision R. Loss = {round(dt_loss * 100, 2)}%')
+  (rmse, mae, r2) = eval_metrics(y_val, lr_predict)
+  mlflow.log_metric("rmse", rmse)
+  mlflow.log_metric("r2", r2)
+  mlflow.log_metric("mae", mae)
+
+  tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
+  if tracking_url_type_store != "file":
+    mlflow.sklearn.log_model(lr, "model", registered_model_name="ElasticnetWineModel")
+  else:
+    mlflow.sklearn.log_model(lr, "model")
   # Logistic Regretion
   # plt.figure(figsize=(12,7))
   # sns.barplot(X_train.columns, lr.coef_[0])
-  linear_feature_importance = pd.DataFrame(data=[lr.coef_[0]], columns=X_train.columns)
-  print(linear_feature_importance)
+  # linear_feature_importance = pd.DataFrame(data=[lr.coef_[0]], columns=X_train.columns)
+  # print(linear_feature_importance)
 
   # plt.figure(figsize=(12,7))
   # sns.barplot(X_train.columns, dt.feature_importances_)
