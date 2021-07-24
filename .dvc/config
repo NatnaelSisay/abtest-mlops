@@ -1,8 +1,10 @@
 [core]
-    remote = dvc-local
+    remote = myremote
 ['remote "dvc-remote"']
     url = /tmp/dvc-storage
 ['remote "dvc-storage"']
     url = gdrive://170MtYgXnQmhwzP0ajbsEn7u-S-wUp_tY
 ['remote "dvc-local"']
     url = /tmp/dvc-local
+['remote "myremote"']
+    url = /tmp/new_storage
