@@ -94,12 +94,27 @@ if __name__ == '__main__':
   lr_predict = lr.predict(X_val)
   dt_predict = dt.predict(X_val)
   lr_loss = round(mean_squared_error(y_val,lr_predict) * 100, 2)
-  dt_loss = mean_squared_error(y_val, dt_predict)
+  dt_loss = round(mean_squared_error(y_val, dt_predict) * 100, 2)
   mlflow.log_metric('loss', lr_loss)
 
   # print(f'Linear R. Loss = {round(lr_loss * 100, 2)}%')
   # print(f'Decision R. Loss = {round(dt_loss * 100, 2)}%')
   (rmse, mae, r2) = eval_metrics(y_val, lr_predict)
+  (dt_rmse, dt_mae, dt_r2) = eval_metrics(y_val, lr_predict)
+
+  ##### used for CML
+  with open('results.txt', 'w') as result:
+      result.write('Logistic Regretion\n')
+      result.write(f'Model Accuracy : {lr_accuracy} %\n')
+      result.write(f'Model Loss : {lr_loss} %\n')
+      result.write(f"rmse:{rmse}\tmae:{mae}\tr2:{r2}\n")
+
+      result.write('\n')
+      result.write('Decision Tree\n')
+      result.write(f'Model Accuracy : {dt_accuracy} %\n')
+      result.write(f'Model Loss : {dt_loss} %\n')
+      result.write(f'rmse:{dt_rmse}\tmae:{dt_mae}\tr2:{dt_r2}\n')
+
   mlflow.log_metric("rmse", rmse)
   mlflow.log_metric("r2", r2)
   mlflow.log_metric("mae", mae)

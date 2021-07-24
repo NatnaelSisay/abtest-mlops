@@ -41,7 +41,6 @@ df['conversion'] = df.yes
 # drop unecessary columns
 df.drop(['yes', 'no', 'auction_id'], axis=1, inplace=True)
 
-
 # label encode columns
 lb_encode = LabelEncoder()
 df['experiment'] = lb_encode.fit_transform(df['experiment'])
@@ -85,25 +84,26 @@ if __name__ == '__main__':
 
   lr_accuracy = round(lr_results.mean() * 100,2)
   dt_accuracy = round(dt_result.mean() * 100,2)
-  # print(f"Linear Regretion K=5 mean score accuracy = {round(lr_results.mean() * 100,2)} %")
-  # print(f"Decision Tree K=5 mean score accuracy = {round(dt_result.mean() * 100,2)} %")
+  
   
   ### Loss Pridiction
   lr_predict = lr.predict(X_val)
   dt_predict = dt.predict(X_val)
   lr_loss = round(mean_squared_error(y_val,lr_predict) * 100, 2)
-  dt_loss = mean_squared_error(y_val, dt_predict)
+  dt_loss = round(mean_squared_error(y_val, dt_predict) * 100, 2)
   
-
-  # print(f'Linear R. Loss = {round(lr_loss * 100, 2)}%')
-  # print(f'Decision R. Loss = {round(dt_loss * 100, 2)}%')
   (rmse, mae, r2) = eval_metrics(y_val, lr_predict)
-  
-  # Logistic Regretion
-  # plt.figure(figsize=(12,7))
-  # sns.barplot(X_train.columns, lr.coef_[0])
-  # linear_feature_importance = pd.DataFrame(data=[lr.coef_[0]], columns=X_train.columns)
-  # print(linear_feature_importance)
+  (dt_rmse, dt_mae, dt_r2) = eval_metrics(y_val, lr_predict)
 
-  # plt.figure(figsize=(12,7))
-  # sns.barplot(X_train.columns, dt.feature_importances_)
+  with open('results.txt', 'w') as result:
+      result.write('Logistic Regretion\n')
+      result.write(f'Model Accuracy : {lr_accuracy} %\n')
+      result.write(f'Model Loss : {lr_loss} %\n')
+      result.write(f"rmse:{rmse}\tmae:{mae}\tr2:{r2}\n")
+
+      result.write('\n')
+      result.write('Decision Tree\n')
+      result.write(f'Model Accuracy : {dt_accuracy} %\n')
+      result.write(f'Model Loss : {dt_loss} %\n')
+      result.write(f'rmse:{dt_rmse}\tmae:{dt_mae}\tr2:{dt_r2}\n')
+
