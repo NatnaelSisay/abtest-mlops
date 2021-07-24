@@ -26,8 +26,6 @@ import sys
 sys.path.append(os.path.abspath(os.path.join('..')))
 import dvc.api
 
-import mlflow
-import mlflow.sklearn
 from urllib.parse import urlparse
 
 path = 'data/AdSmartABdata.csv'
@@ -36,15 +34,12 @@ data_url = dvc.api.get_url(path=path, repo=repo)
 
 
 # reading data
-# this is not the right waytody , but cml is showing me error
-file_name = './data/AdSmartABdata.csv'
-ad_df = pd.read_csv(file_name)
+ad_df = pd.read_csv(data_url)
 df = ad_df.copy()
 df['conversion'] = df.yes
 
 # drop unecessary columns
 df.drop(['yes', 'no', 'auction_id'], axis=1, inplace=True)
-
 
 # label encode columns
 lb_encode = LabelEncoder()
@@ -89,22 +84,17 @@ if __name__ == '__main__':
 
   lr_accuracy = round(lr_results.mean() * 100,2)
   dt_accuracy = round(dt_result.mean() * 100,2)
-  # print(f"Linear Regretion K=5 mean score accuracy = {round(lr_results.mean() * 100,2)} %")
-  # print(f"Decision Tree K=5 mean score accuracy = {round(dt_result.mean() * 100,2)} %")
-  mlflow.log_metric('accuracy', lr_accuracy)
+  
+  
   ### Loss Pridiction
   lr_predict = lr.predict(X_val)
   dt_predict = dt.predict(X_val)
   lr_loss = round(mean_squared_error(y_val,lr_predict) * 100, 2)
   dt_loss = round(mean_squared_error(y_val, dt_predict) * 100, 2)
-  mlflow.log_metric('loss', lr_loss)
-
-  # print(f'Linear R. Loss = {round(lr_loss * 100, 2)}%')
-  # print(f'Decision R. Loss = {round(dt_loss * 100, 2)}%')
+  
   (rmse, mae, r2) = eval_metrics(y_val, lr_predict)
   (dt_rmse, dt_mae, dt_r2) = eval_metrics(y_val, lr_predict)
 
-  ##### used for CML
   with open('results.txt', 'w') as result:
       result.write('Logistic Regretion\n')
       result.write(f'Model Accuracy : {lr_accuracy} %\n')
@@ -117,20 +107,3 @@ if __name__ == '__main__':
       result.write(f'Model Loss : {dt_loss} %\n')
       result.write(f'rmse:{dt_rmse}\tmae:{dt_mae}\tr2:{dt_r2}\n')
 
-  mlflow.log_metric("rmse", rmse)
-  mlflow.log_metric("r2", r2)
-  mlflow.log_metric("mae", mae)
-
-  tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
-  if tracking_url_type_store != "file":
-    mlflow.sklearn.log_model(lr, "model", registered_model_name="ElasticnetWineModel")
-  else:
-    mlflow.sklearn.log_model(lr, "model")
-  # Logistic Regretion
-  # plt.figure(figsize=(12,7))
-  # sns.barplot(X_train.columns, lr.coef_[0])
-  # linear_feature_importance = pd.DataFrame(data=[lr.coef_[0]], columns=X_train.columns)
-  # print(linear_feature_importance)
-
-  # plt.figure(figsize=(12,7))
-  # sns.barplot(X_train.columns, dt.feature_importances_)
