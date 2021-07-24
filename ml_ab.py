@@ -90,17 +90,16 @@ if __name__ == '__main__':
   lr_accuracy = round(lr_results.mean() * 100,2)
   dt_accuracy = round(dt_result.mean() * 100,2)
   
-  mlflow.log_metric('accuracy', lr_accuracy)
 
   ### Loss Pridiction
   lr_predict = lr.predict(X_val)
   dt_predict = dt.predict(X_val)
   lr_loss = round(mean_squared_error(y_val,lr_predict) * 100, 2)
   dt_loss = round(mean_squared_error(y_val, dt_predict) * 100, 2)
-  mlflow.log_metric('loss', lr_loss)
+  
 
   (rmse, mae, r2) = eval_metrics(y_val, lr_predict)
-  (dt_rmse, dt_mae, dt_r2) = eval_metrics(y_val, lr_predict)
+  (dt_rmse, dt_mae, dt_r2) = eval_metrics(y_val, dt_predict)
 
   ##### used for CML
   with open('results.txt', 'w') as result:
@@ -115,12 +114,14 @@ if __name__ == '__main__':
       result.write(f'Model Loss : {dt_loss} %\n')
       result.write(f'rmse:{dt_rmse}\tmae:{dt_mae}\tr2:{dt_r2}\n')
 
-  mlflow.log_metric("rmse", rmse)
-  mlflow.log_metric("r2", r2)
-  mlflow.log_metric("mae", mae)
+  mlflow.log_metric('accuracy', dt_accuracy)
+  mlflow.log_metric('loss', dt_loss)
+  mlflow.log_metric("rmse", dt_rmse)
+  mlflow.log_metric("r2", dt_r2)
+  mlflow.log_metric("mae", dt_mae)
 
   tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
   if tracking_url_type_store != "file":
-    mlflow.sklearn.log_model(lr, "Logistic", registered_model_name="ElasticnetWineModel")
+    mlflow.sklearn.log_model(dt, "Decision", registered_model_name="ElasticnetWineModel")
   else:
-    mlflow.sklearn.log_model(lr, "Logistic")
+    mlflow.sklearn.log_model(dt, "Decision")
