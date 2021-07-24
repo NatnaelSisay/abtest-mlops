@@ -89,9 +89,9 @@ if __name__ == '__main__':
 
   lr_accuracy = round(lr_results.mean() * 100,2)
   dt_accuracy = round(dt_result.mean() * 100,2)
-  # print(f"Linear Regretion K=5 mean score accuracy = {round(lr_results.mean() * 100,2)} %")
-  # print(f"Decision Tree K=5 mean score accuracy = {round(dt_result.mean() * 100,2)} %")
+  
   mlflow.log_metric('accuracy', lr_accuracy)
+
   ### Loss Pridiction
   lr_predict = lr.predict(X_val)
   dt_predict = dt.predict(X_val)
@@ -99,8 +99,6 @@ if __name__ == '__main__':
   dt_loss = round(mean_squared_error(y_val, dt_predict) * 100, 2)
   mlflow.log_metric('loss', lr_loss)
 
-  # print(f'Linear R. Loss = {round(lr_loss * 100, 2)}%')
-  # print(f'Decision R. Loss = {round(dt_loss * 100, 2)}%')
   (rmse, mae, r2) = eval_metrics(y_val, lr_predict)
   (dt_rmse, dt_mae, dt_r2) = eval_metrics(y_val, lr_predict)
 
@@ -123,14 +121,6 @@ if __name__ == '__main__':
 
   tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
   if tracking_url_type_store != "file":
-    mlflow.sklearn.log_model(lr, "model", registered_model_name="ElasticnetWineModel")
+    mlflow.sklearn.log_model(lr, "Logistic", registered_model_name="ElasticnetWineModel")
   else:
-    mlflow.sklearn.log_model(lr, "model")
-  # Logistic Regretion
-  # plt.figure(figsize=(12,7))
-  # sns.barplot(X_train.columns, lr.coef_[0])
-  # linear_feature_importance = pd.DataFrame(data=[lr.coef_[0]], columns=X_train.columns)
-  # print(linear_feature_importance)
-
-  # plt.figure(figsize=(12,7))
-  # sns.barplot(X_train.columns, dt.feature_importances_)
+    mlflow.sklearn.log_model(lr, "Logistic")
